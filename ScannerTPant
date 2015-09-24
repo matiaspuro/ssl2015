@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+bool EsSigno(char);
+bool EsOtro (char);
+int Sigma (char);
+int Transicion (int, int);
+bool Acepta(int);
+
+unsigned int TT[8][4]; //Tabla de Transición.
+
+bool EsSigno(char c)
+{
+    if(c == '+'|| c =='-')
+        return true;
+    else
+        return false;
+}
+
+bool EsOtro (char c)
+{
+    if (c!= '#' && c!= '\n' &&!(EsSigno(c)) && !(isdigit(c)))
+        return true;
+    else
+        return false;
+}
+
+int Sigma (char c)
+{
+        if (EsSigno(c)) return 0;
+        if (isdigit(c)) return 1;
+        if (c=='#')     return 2;
+        if (EsOtro(c))  return 3;
+        if (c=='\n')    return 4;
+}
+
+int Transicion (int Q, int Sigma)
+{
+    /*Estado |Signo |Dígito |# |Otro |fdt|
+        0-   | 1    |  2    |0 |  5  | 8 |
+        1    | 5    |  2    |0 |  5  | 7 |
+        2    | 5    |  2    |3 |  5  | 4 |
+        3+   | 1    |  2    |0 |  5  | 8 |
+     4+(fdt) |      |       |  |     |   |
+        5    | 5    |  5    |6 |  5  | 7 |
+        6+   | 1    |  2    |0 |  5  | 8 |
+     7+(fdt) |      |       |  |     |   |
+     8+(fdt) |      |       |  |     |   |
+     ---------------+-------+--+-----+---+
+
+     3+ Salida aceptada
+     4+ Salida aceptada y finalización
+     6+ Salida rechazada
+     7+ Salida rechazada y finalización
+     8  Finalización
+     */
+    TT[0][2]= TT[1][2]= TT[3][2]= TT[5][2]= 0;
+    TT[0][0]= TT[3][0]= TT[6][0]= 1;
+    TT[0][1]= TT[1][1]= TT[2][1]= TT[3][1]= TT[6][1]= 2;
+    TT[2][2]= 3;
+    TT[2][4]= 4;
+    TT[0][3]= TT[1][0]= TT[1][3]= TT[2][0]= TT[2][3]= TT[3][3]= TT[5][0]= TT[5][1]= TT[5][3]= TT[6][3]= 5;
+    TT[5][2]= 6;
+    TT[5][4]= TT[1][4]= 7;
+    return TT[Q][Sigma];
+}
+
+bool Acepta(int Q)
+{
+    if (Q == 3 || Q == 4)
+        return true;
+    else
+        return false;
+}
+
+int main()
+{
+    int Q = 0; //Q es el estado
+    int sigma = 4;
+    int i = 0;
+    char c;
+    char escritura[99]="";
+    int aceptadas = 0;
+    int rechazadas = 0;
+    printf("Ingrese una cadena \r\n");
+    int correr= 1;
+    while(correr)
+    {
+        c=getchar();
+        int j=0;
+        Q=Transicion(Q,Sigma(c));
+        if (c=='#'||c=='\n')
+        {
+            if (Acepta(Q))
+            {
+                aceptadas++;
+                printf("Se reconocio la cadena: ");
+                printf("%s \r\n",escritura);
+            }
+            else
+            {
+                rechazadas++;
+                printf("No se reconocio la cadena: ");
+                printf("%s \r\n",escritura);
+            }
+            for(j;j<99;j++)
+                escritura[j]='\0';
+            i=0;
+        }else{
+            escritura[i]=c;
+            i++;
+        }
+        if(c=='\n')
+        {
+            correr=0;
+        }
+    }
+
+    printf("Cadenas aceptadas: %d \r\n Cadenas rechazadas: %d", aceptadas,rechazadas);
+    return 0;
+}
