@@ -1,0 +1,132 @@
+/*
+estado	letra	numero	mas	menos	*	/	fdt	(	)	,	.	:	espacio	\n	igual	Otro	;
+0	1	3	5	6	7	10	13	14	15	16	17	18	0	20	87	23	25
+1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	Reconociendo identificador
+2	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	 Estado Aceptor de identificador
+3	21	3	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	Reconociendo cte
+4	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor cte
+5	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor suma
+6	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor resta
+7	8	8	87	87	87	9	87	87	87	87	87	87	87	87	87	87	87	Reconociendo *
+8	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor multiplicacion
+9	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado Aceptor * /
+10	11	11	87	87	12	87	87	87	87	87	87	87	87	87	87	87	87	Reconociendo /
+11	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor division
+12	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor /*
+13	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor eof
+14	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor (
+15	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor )
+16	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor ,
+17	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor .
+18	87	87	87	87	87	87	87	87	87	87	87	87	87	87	19	87	87	Reconociendo :
+19	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor :=
+20	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor  \n
+21	21	21	22	22	22	22	22	22	22	22	22	22	22	22	22	22	22	Reconociendo error cte
+22	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor error cte
+23	23	23	23	23	23	23	24	23	23	23	23	23	24	24	23	23	24	Reconociendo error lexico
+24	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor errror lexico
+25	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	87	Estado aceptor ;
+
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int numeroDeLinea=0;
+
+int esEstadoAceptor(int estado){
+
+if(estado==2 || estado==4 ||estado==5 ||estado==6 ||estado==8 ||estado==9 ||estado==11 ||estado==12 ||estado==13 ||estado==14 ||estado==15 ||estado==16 ||estado==17 ||estado==19 ||estado==20 ||estado==22 ||estado==24 ||estado==25){
+		return 1;
+	}
+else return 0;
+		}
+
+
+int tablaColumna(char caracter){
+
+	if(isalpha(caracter)) return 1;
+	if(isdigit(caracter)) return 2;
+	if('+'==caracter) return 3;
+	if('-'==caracter) return 4;
+	if('*'==caracter) return 5;
+	if('/'==caracter) return 6;
+	if(EOF==caracter) return 7;
+	if('('==caracter) return 8;
+	if(')'==caracter) return 9;
+	if(','==caracter) return 10;
+	if('.'==caracter) return 11;
+	if(':'==caracter) return 12;
+	if(' '==caracter) return 13;
+	if('\n'==caracter) {numeroDeLinea++;return 14;}
+	if('='==caracter) return 15;
+	if(';'==caracter) { return 17; }
+	else{
+		return 16;
+	}
+
+
+}
+
+
+int main(void) {
+
+	char buffer[100],caracter;
+	int columna,estado,i;
+
+
+	 int tablaTransicion[26][17]= //estado caracter
+			 {{0,1,3,5,6,7,10,13,14,15,16,17,18,0,20,87,23,25},
+			 {1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
+			 {2,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {3,21,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},
+			 {4,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {5,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {6,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {7,8,8,87,87,87,9,87,87,87,87,87,87,87,87,87,87,87},
+			 {8,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {9,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {10,11,11,87,87,12,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {11,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {12,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {13,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {14,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {15,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {16,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {17,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {18,87,87,87,87,87,87,87,87,87,87,87,87,87,87,19,87,87},
+			 {19,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {20,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {21,21,21,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22},
+			 {22,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {23,23,23,23,23,23,23,24,23,23,23,23,23,24,24,23,23,24},
+			 {24,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87},
+			 {25,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87,87}};
+
+while(!feof(stdin)){
+i=0;//posicion 0
+estado=0;
+while(!esEstadoAceptor(estado)){ //si no es estado aceptor entra en el bucle
+
+	caracter=fgetc(stdin);//extraigo un caracter
+	buffer[i]=caracter;//lo pongo en el buffer
+	i++;
+	columna=tablaColumna(caracter);//busco en que columna cae el caracter
+	estado=tablaTransicion[estado][columna];//en base a mi estado anterior y la columna obtenida redefino mi estado
+}
+if(caracter!='\n')
+{
+ungetc(caracter,stdin);//devuelvo el caracter que use como centinela
+i--;
+}
+else {
+	i--;
+}
+
+}
+
+
+
+	return EXIT_SUCCESS;
+}
